@@ -1,3 +1,2 @@
-#marker.jsp ignore test final
-marker.html
-marker.jsp
+#ignore rootcontext file (protect aws api)
+src/main/webapp/WEB-INF/spring/
