@@ -63,7 +63,7 @@ public class AddrServiceImpl implements AddrService{
 	}
 
 	@Override
-	public double getStarAvg(String contentId) throws Exception {
+	public Double getStarAvg(String contentId) throws Exception {
 		// TODO Auto-generated method stub
 		return dao.getStarAvg(contentId);
 	}

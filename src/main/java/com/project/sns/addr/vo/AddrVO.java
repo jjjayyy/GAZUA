@@ -20,6 +20,7 @@ public class AddrVO {
 	private String image2;
 	private String image3;
 	private String scope;
+	private String star;
 	
 	private String link1;
 	private String link2;
@@ -156,6 +157,12 @@ public class AddrVO {
 	}
 	public void setImage3(String image3) {
 		this.image3 = image3;
+	}
+	public String getStar() {
+		return star;
+	}
+	public void setStar(String star) {
+		this.star = star;
 	}
 
 

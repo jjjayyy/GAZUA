@@ -66,7 +66,7 @@ public class AddrDAOImpl implements AddrDAO {
 	}
 
 	@Override
-	public double getStarAvg(String contentId) throws Exception {
+	public Double getStarAvg(String contentId) throws Exception {
 		return sqlSession.selectOne(namespace+".getStarAvg", contentId);	
 	}
 	

@@ -72,7 +72,12 @@
          <input type="text" id="searchMap" onkeydown="enterkey();"/> <img src="resources/image/search_btn.jpg" id = "searchMapBtn" type="button" value="검색" onclick="searchMap();"/>
       		</div>
         </div>
+         <div id="weatherBox" style="z-index:2;">
+			  <img id="sun" src ="resources/image/sun.png">     
+           	  <img id="rain" src ="resources/image/rain.png">
+      	</div>
          <div id="map" style="z-index: 1;" ></div> 
+
       </div>
       
       <!-- 오른쪽 사이드 -->  
@@ -114,6 +119,8 @@
 <script>
 
 $('#timeOption').hide();
+$('#sun').hide();
+$('#rain').hide();
 
 var mapContainer = document.getElementById('map'), // 지도를 표시할 div  
     mapOption = { 
@@ -123,6 +130,14 @@ var mapContainer = document.getElementById('map'), // 지도를 표시할 div
 
 var map = new daum.maps.Map(mapContainer, mapOption); // 지도를 생성합니다
 customOverlay = new daum.maps.CustomOverlay({});
+var weather = <%=(int) request.getAttribute("weather")%>;
+if(weather==1){
+	$('#sun').show();
+} else {
+	$('#rain').show();	
+}
+
+
 
 // 마커를 표시할 위치와 title 객체 배열입니다 
 var positions =  [
@@ -135,7 +150,7 @@ var positions =  [
  contentid : "<%=list.get(i).getContentId()%>",
  latlng : new daum.maps.LatLng(<%=list.get(i).getMapy()%>,<%=list.get(i).getMapx()%>),
  mapx : "<%=list.get(i).getMapx()%>",
- mapy : "<%=list.get(i).getMapy()%>"
+ mapy : "<%=list.get(i).getMapy()%>"				
 }
 
 <%
@@ -310,7 +325,7 @@ marker_height = 35,
 over_marker_width = 30,
 over_marker_height = 40,
 sprite_marker_url = "http://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png",
-click_marker_url = "markerStarRed.png";
+click_marker_url = "resources/image/markerStarRed.png";
 
 var markerSize = new daum.maps.Size(marker_width, marker_height), 
 overMarkerSize = new daum.maps.Size(over_marker_width, over_marker_height),
@@ -508,16 +523,17 @@ function recommend() {
             url : 'getPath.do',
             type : 'get',
             dataType : 'json',
-            data : {'sigungucode' : sigungucode, 'startTime' : $('#startTime').val()},
+            data : {'sigungucode' : sigungucode, 'startTime' : $('#startTime').val(), 'weather' : weather},
             success : function(jsonData) {
 
-
                var path = jsonData.path;
+               var time = jsonData.time;
                var sidePath = "";               //오른쪽 사이드바에 경로 나열
                recPath = [];                  //추천 경로가 담겨질 배열
                afterpath = [];
 			   afterpath = [];
                count++;
+               
                if(count > 1){                  //추천경로 클릭할 때마다 새로운 라인과 마커 생성
                   getpath();
                      return false;
@@ -542,7 +558,8 @@ function recommend() {
                               
                         sidePath += '<div class="pinn ' + positions[j].contentid + '" id="' + positions[j].contentid + '">';
                         sidePath += '<h4 class="title"><img src="resources/image/pathsidex.png" class= "xbtn" id="d' + positions[j].contentid + '"onclick="deletePin(this)">'
-                                  + "<a href='javascript:panTo(" + positions[j].mapy + "," + positions[j].mapx + "," + positions[j].contentid + "," + positions[j].contenttypeid + ")'>"
+                        			 + "<li>" + time[i].substr(0,2) + ":" + time[i].substr(2,2) + "</li>"
+                        			 + "<a href='javascript:panTo(" + positions[j].mapy + "," + positions[j].mapx + "," + positions[j].contentid + "," + positions[j].contenttypeid + ")'>"
                                   + positions[j].title + "</a>" + '</h4>';
                         sidePath += '</div>'; 
 
@@ -554,6 +571,7 @@ function recommend() {
                $('#pathlist').html(sidePath); //경로 목록 찍어줌
                
                drawLine(recPath);
+
             },
             error : function(XMLHttpRequest, textStatus, errorThrown) {
                alert("시간을 입력해주세요");  
@@ -773,8 +791,8 @@ function getDetail(contentid, contenttypeid){
                output += '<div class="pin-top"><div id="title" style="background-image: url(\'' + 'resources/image/popup-top.png' + '\');"><font size="4em">' + addr.title + '</font><a id="popup-X" href="#" onclick="popupX()">';
                output += '<img src="resources/image/popup-X.png"></a></div></div>';
                output += '<div class="scope" ><img src = "' + addr.firstimage + '" style="height: 250px; width: 350px; float:left"/>';
-            if(addr.scope && addr.scope !="0" && addr.scope!="0.0"){
-               output += '<p><div class="glyphicon glyphicon-star" />' + addr.scope + '</p>';
+            if(contenttypeid==39){
+               output += '<p>네이버 플레이스 음식점 평점 : <div class="glyphicon glyphicon-star"/>' + addr.scope + '</p>';
             }
                if(addr.image1 && addr.link1){
                    output += '<p class="p">리뷰보기:(클릭으로 이동) </p><a class="review" href="' + addr.link1 + '"><img src="' + addr.image1 + '"/>'
@@ -851,7 +869,7 @@ function getDetail(contentid, contenttypeid){
                    output += '<p class="p" >' +'연락처 : ' + myItem.infocenterfood + '</p>';
                   }
             }
-            
+            		output += '<p>' + addr.star + '/<p>';
                 output += '</div>';
                 $('#window').html(output);
         },

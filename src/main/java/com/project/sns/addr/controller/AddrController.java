@@ -90,7 +90,6 @@ public class AddrController {
 		addr = addr + serviceKey + parameter;
 		URL url = new URL(addr);
 
-		System.out.println(addr);
 
 		// BufferedReader in = new BufferedReader(new
 		// InputStreamReader(url.openStream(), "UTF-8"));
@@ -173,7 +172,6 @@ public class AddrController {
 		addr = addr + serviceKey + parameter;
 		URL url = new URL(addr);
 
-		System.out.println(addr);
 
 		// BufferedReader in = new BufferedReader(new
 		// InputStreamReader(url.openStream(), "UTF-8"));
@@ -269,41 +267,43 @@ public class AddrController {
 		JSONObject json = new JSONObject();
 		json.put("data", s);
 		
-		System.out.println(s);
-		System.out.println(json);
 	}
 	
 	@ResponseBody
 	@RequestMapping("/callInfo")
 	public AddrVO callInfo(@RequestParam String contentId) throws Exception{
 		AddrVO vo = service.callInfo(contentId);
-		double star = 0;
+		double scope = 0;
+		double star = service.getStarAvg(contentId);
 		if(vo.getScope()!=null) {
-			star = Double.parseDouble(vo.getScope());
-			if(star != 0) {
+			scope = Double.parseDouble(vo.getScope());
+			if(scope != 0) {
 				if(service.getStarAvg(contentId)>0) {
-					double star2 = service.getStarAvg(contentId);
-					if(star2!=0) {
-						star = (star + star2)/2;
+					if(star!=0) {
+						scope = (scope + star)/2;
 					}
 				}
 			}
 		}
-		String stars = Double.toString(star);
+		String scopeStr = Double.toString(scope);
+		String starStr = Double.toString(star);
+		
 		if(vo.getContentTypeId().equals("39")) {
-		AddrVO vo2 = service.callReview(contentId);
-		if(vo2!=null) {
-		vo.setLink1(vo2.getLink1());
-		vo.setLink2(vo2.getLink2());
-		vo.setLink3(vo2.getLink3());
-		vo.setImage1(vo2.getImage1());
-		vo.setImage2(vo2.getImage2());
-		vo.setImage3(vo2.getImage3());
-		vo.setScope(stars);
-		}else {
-			vo.setScope(stars);
+			AddrVO vo2 = service.callReview(contentId);
+			if(vo2!=null) {
+					vo.setLink1(vo2.getLink1());
+					vo.setLink2(vo2.getLink2());
+					vo.setLink3(vo2.getLink3());
+					vo.setImage1(vo2.getImage1());
+					vo.setImage2(vo2.getImage2());
+					vo.setImage3(vo2.getImage3());
+					vo.setScope(scopeStr);
+		} else {
+			vo.setScope(scopeStr);
 			vo2 = null;
 		}
+		} else {
+			vo.setStar(starStr);
 		}
 		return vo;
 	}
@@ -335,58 +335,62 @@ public class AddrController {
 
 		    request.setAttribute("id", id);
 		    }
+		    
+		    
+			//날씨 API
+			   String[] pty = new String[3];
+		       String[] wfKor = new String[3];
+		       String[] hour1 = new String[3];
+		        int weather =0 ;
+		        try {
+		              DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();				//문서 읽기 위한 factory
+		              DocumentBuilder builder = factory.newDocumentBuilder();								//빌더 생성
+		            
+		              Document xmlDoc = null;
+		              String url = "http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=1159068000";
+		              xmlDoc = builder.parse(url);															//생성된 빌더를 통해 XML문서를 Document 객체로 파싱해서 가져온다	            
+		              Element root = xmlDoc.getDocumentElement();
+		              // System.out.println(root.getTagName());
+		               
+		              for (int i = 0; i < pty.length; i++) {
+		               Node xml = root.getElementsByTagName("pubDate").item(0);     
+		               Node xmlNode1 = root.getElementsByTagName("data").item(i);
+		               
+		               Node xmlNode21 = ((Element) xmlNode1).getElementsByTagName(
+		                 "pty").item(0);
+		               Node xmlNode22 = ((Element) xmlNode1).getElementsByTagName(
+		                 "wfKor").item(0);
+		               Node xmlNode23 = ((Element) xmlNode1).getElementsByTagName(
+		                 "hour").item(0);
+		                
+		               pty[i] = xmlNode21.getTextContent();
+		               wfKor[i] = xmlNode22.getTextContent();
+		               hour1[i] = "기준시각 : " + xmlNode23.getTextContent() + "시";
+		               
+		               System.out.println("기준 시간"+xml.getTextContent());
+		               System.out.println("기온 : 0 => 맑음  1,2,3 => 눈/비           현상태 =>"+pty[i] + "    날씨: " + wfKor[i] + "    시간: " +hour1[i]);
+		               
+		               if(pty[i].equals("0"))
+		                  weather = 1;
+		               else 
+		                  weather = 2;
+		              }	            
+		             } catch (Exception e) {
+
+		             }	        
+		        
+		      request.setAttribute("weather", weather);
 		    return "path2";
 		 }
 	
 	//Dijkstra - 코스추천 길찾기
 	@RequestMapping("/getPath.do")
-	public @ResponseBody Map<String, Object> getPath(@RequestParam String sigungucode, @RequestParam String startTime) throws Exception {
+	public @ResponseBody Map<String, Object> getPath(@RequestParam String sigungucode, @RequestParam String startTime, String weather) throws Exception {
 		
 		
-		//날씨 API
-		   String[] temp = new String[3];
-	       String[] wfKor = new String[3];
-	       String[] hour1 = new String[3];
-	        int weather =0 ;
-	        try {
-	              DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();				//문서 읽기 위한 factory
-	              DocumentBuilder builder = factory.newDocumentBuilder();								//빌더 생성
-	            
-	              Document xmlDoc = null;
-	              String url = "http://www.weather.go.kr/wid/queryDFSRSS.jsp?zone=1159068000";
-	              xmlDoc = builder.parse(url);															//생성된 빌더를 통해 XML문서를 Document 객체로 파싱해서 가져온다	            
-	              Element root = xmlDoc.getDocumentElement();
-	              // System.out.println(root.getTagName());
-	               
-	              for (int i = 0; i < temp.length; i++) {
-	               Node xml = root.getElementsByTagName("pubDate").item(0);     
-	               Node xmlNode1 = root.getElementsByTagName("data").item(i);
-	               
-	               Node xmlNode21 = ((Element) xmlNode1).getElementsByTagName(
-	                 "pty").item(0);
-	               Node xmlNode22 = ((Element) xmlNode1).getElementsByTagName(
-	                 "wfKor").item(0);
-	               Node xmlNode23 = ((Element) xmlNode1).getElementsByTagName(
-	                 "hour").item(0);
-	                
-	               temp[i] = xmlNode21.getTextContent();
-	               wfKor[i] = xmlNode22.getTextContent();
-	               hour1[i] = "기준시각 : " + xmlNode23.getTextContent() + "시";
-	               
-	               System.out.println("기준 시간"+xml.getTextContent());
-	               System.out.println("기온 : 0 => 맑음  1,2,3 => 눈/비           현상태 =>"+temp[i] + "    날씨: " + wfKor[i] + "    시간: " +hour1[i]);
-	               if(temp[i].equals("0"))
-	                  weather = 1;
-	               else 
-	                  weather = 2;
-	              }	            
-	             } catch (Exception e) {
-	              System.out.println(e.getMessage());
-	              System.out.println(e.toString());
-	             }	        
-	  
 	       List<AddrVO> list = null;
-	       if(weather == 1)
+	       
+	       if(weather.equals("1"))
 	       {	
 	    	   list = service.getAddrWithCode(sigungucode);
 	       }
@@ -396,7 +400,6 @@ public class AddrController {
 	       }
 
 		List<BoardVO> listHeart = service.getHeart();
-		System.out.println();
 		List<BoardVO> listStar = service.getStarAvgList();
 	       
 		double distanceMeter = 0;
@@ -418,7 +421,6 @@ public class AddrController {
 		int time = 0;
 		String sTime = startTime.replace(":", "");
 		String ampm = sTime.substring(4);
-		System.out.println(sTime.substring(0,4));
 		if(sTime.substring(0,4).equals("0000")) {
 			time = Integer.parseInt(curDate.substring(8));
 		} else if(ampm.equals("PM")){
@@ -429,7 +431,7 @@ public class AddrController {
 			time = Integer.parseInt(sTime.substring(0,4)) + 1200;
 		}
 
-		if(time <= 2400) {
+		if(time >= 2400) {
 			time = time - 1200;					//pm12:00의 경우 24를 넘어가서 점심시간 계산을 못해서 24:00를 넘어가면 -12:00를 해줍니다
 		}
      		
@@ -443,10 +445,10 @@ public class AddrController {
 				mapList.add(list.get(j).getScope());						//네이버 음식점 평점
 				mapList.add(list.get(j).getContentId());					
 				mapList.add(list.get(j).getContentTypeId());
-				mapList.add(list.get(j).getInside());
 				for(int l=0; l<listStar.size(); l++) {
-					if(listStar.get(l) !=null && list.get(j).getContentId().equals(listStar.get(l).getStar())) {
+					if(listStar.get(l) !=null && list.get(j).getContentId().equals(listStar.get(l).getContentId())) {
 						mapList.add(listStar.get(l).getStar());
+						System.out.println(listStar.get(l).getStar());
 					}
 				}				
 				for(int k=0; k<listHeart.size(); k++) {
@@ -454,9 +456,7 @@ public class AddrController {
 						mapList.add(listHeart.get(k).getHeart());			//게시글 좋아요
 				}
 				}
-					
-
-		
+							
 					
 				tempMap.put(list.get(j).getContentId(), mapList);			
 			}	
@@ -508,18 +508,25 @@ public class AddrController {
 		String destination = destinationArry.get(0).toString();
                
         ArrayList<String> path = new ArrayList<>();			//경로 담아두는 LIST
+        ArrayList<String> pathTime = new ArrayList<>();		//경로 이동에 따른 시간 LIST
         String curNode = destination; 	//현재노드는 destination   
-               
-        path.add(destination);			
-        	
+        
+        path.add(destination);							//도착 노드
+        	pathTime.add(String.valueOf(lastTime));			//도착 시간
         while(!result.preNode.get(curNode).isEmpty()){					
-           curNode  = (String) result.preNode.get(curNode).get(0);						
-           												
+           curNode = (String) result.preNode.get(curNode).get(0);				//경로들을 json 데이터에 담는다.
            path.add(curNode);
+           if(result.preNode.get(curNode).size() != 0) {
+        	   		String curTime = String.valueOf(result.preNode.get(curNode).get(1));				//경로의 시간 데이터를 json 데이터에 담는다.
+        	   		pathTime.add(curTime);
+           } else {        	 
+        	   		pathTime.add(String.valueOf(time));												//출발 시간
+           }          
         }																
                
         Map<String, Object> jsonData = new HashMap<String, Object>();
         jsonData.put("path",path);
+        jsonData.put("time", pathTime);
         return jsonData;
 	}
 
@@ -528,25 +535,19 @@ public class AddrController {
     @RequestMapping(value = "/getpath", method= {RequestMethod.POST})
     public List<AddrVO> path(HttpServletRequest req, @RequestBody List<AddrVO> paramData) throws Exception{
 
-          System.out.println("paramData의 길이" + paramData.size());
-          System.out.println(paramData.toString());
+
           for(int i = 0; i < paramData.size(); i++) {
-             System.out.println(paramData.get(i).getContentId());
-             System.out.println(paramData.get(i).getTitle());
+
 
           }
 
              int[][] W = getP.getW(paramData);
              
-          System.out.println("getW의 결과 W : ");
           for(int i = 0; i<W.length; i++) {
              for(int j = 0; j <W[0].length; j++) {
-                System.out.print(W[i][j] + " ");
              }
-             System.out.println();
           }               
           getP.getShortestPath(1, 1, W);
-          System.out.println("getShortestPath의 바로 다음 줄 실행");
           
            int delayTime = 2000;
            long saveTime = System.currentTimeMillis();
@@ -556,10 +557,8 @@ public class AddrController {
            }System.out.println("시간2초 경과");
            
           List<Integer> path = getP.getPath();
-           System.out.println("getShortestPath끝나고 path : " + path.toString());
 
           Collections.reverse(path);
-          System.out.println("path의 길이 : " + path.size());
           
           int longest = 0;
           int star = 0;         
@@ -575,12 +574,10 @@ public class AddrController {
              }
           }
           
-          System.out.println("W : ");
           for(int i = 0; i<W.length; i++) {
              for(int j = 0; j <W[0].length; j++) {
                 System.out.print(W[i][j] + " ");
              }
-             System.out.println();
           }
           
           
@@ -593,12 +590,9 @@ public class AddrController {
              result.add(path.get(i));
           }
           
-          System.out.println("result의 길이 : " + result.size());
 
           
-          System.out.println("result : ");
           for(int i : result) {
-             System.out.print(i + " ");
           }
           
           List<AddrVO> re = new ArrayList<>();
@@ -606,7 +600,6 @@ public class AddrController {
              re.add(paramData.get(i-1));
           }
 
-          System.out.println("re의 길이 : " + re.size());
           
           return re;
     }  
@@ -708,27 +701,24 @@ public class AddrController {
 	            //minNode.get(key).get(0) : 거리
 	            //minNode.get(key).get(1) : 네이버 평점
 	            //minNode.get(key).get(2) : 콘텐츠ID
-	            //minNode.get(key).get(3) : 콘텐츠 타입ID (카테고리)	            
-	            //minNode.get(key).get(4) : 실내/실외
-	            //minNode.get(key).get(5) : 사용자가 준 별점
-	            //minNode.get(key).get(6) : 좋아요...임시
+	            //minNode.get(key).get(3) : 콘텐츠 타입ID (카테고리)
+	            //minNode.get(key).get(4) : 사용자가 준 별점
+	            //minNode.get(key).get(5) : 좋아요...임시
 	            	
 	            	String sco = minNodeMap.get(key).get(1).toString().replaceAll("\n", "");
 	            	Double scop = Double.parseDouble(sco);
 	            	int scope = (int)Math.round(scop);
 		            String contentId = minNodeMap.get(key).get(2).toString();
 		            String contentTypeId = minNodeMap.get(key).get(3).toString();
-		            int nextTime = curTime + 200;
-		            String inside = minNodeMap.get(key).get(4).toString();
+		            int nextTime = curTime + 200;				//한 장소에 2시간 씩 머문다고 가정하여 알고리즘을 돌 때마다 2시간씩 더함
 		            int like = 0;
 		            int star = 0;
+		            if(minNodeMap.get(key).size()==5) {
+		            	star = (int)Math.round(Double.parseDouble(minNodeMap.get(key).get(4).toString()));
+		            }
 		            if(minNodeMap.get(key).size()==6) {
-		            	star = (int)Math.round(Double.parseDouble(minNodeMap.get(key).get(5).toString()));
+		            	like = (int) minNodeMap.get(key).get(5);
 		            }
-		            if(minNodeMap.get(key).size()==7) {
-		            	like = (int) minNodeMap.get(key).get(6);
-		            }
-
 		            
 	            		double distance = minNodeDistance + Double.parseDouble(minNodeMap.get(key).get(0).toString());		//처음 = 0 + 거리, 첫바퀴는 거리세팅      		//이동한 거리 + 출발지에서 다음 노드까지 거리
 
@@ -739,10 +729,10 @@ public class AddrController {
 
 	            					switch (scope){
 	            					case 1: distance = distance - 1; break;
-	            					case 2: distance = distance - 2; break;
-	            					case 3: distance = distance - 3; break;
-	            					case 4: distance = distance - 4; break;
-	            					case 5: distance = distance - 5; break;
+	            					case 2: distance = distance - 3; break;
+	            					case 3: distance = distance - 5; break;
+	            					case 4: distance = distance - 8; break;
+	            					case 5: distance = distance - 10; break;
 	            					default : distance = distance - 1; break;
 					                }
 			                	} else {
@@ -753,18 +743,17 @@ public class AddrController {
 			                		distance = distance + 10000;
 			                }		                				                				                
 
-	            			if(!contentTypeId.equals("39")) {
-		            			switch (star){
+	            			
+	            			switch (star){
 	        					case 1: distance = distance - 1; break;
-	        					case 2: distance = distance - 2; break;
-	        					case 3: distance = distance - 3; break;
-	        					case 4: distance = distance - 4; break;
-	        					case 5: distance = distance - 5; break;
+	        					case 2: distance = distance - 3; break;
+	        					case 3: distance = distance - 5; break;
+	        					case 4: distance = distance - 8; break;
+	        					case 5: distance = distance - 10; break;
 	        					default : distance = distance - 1; break;
 				                }
-	            			}
-
 	            			
+
 /*	            			if(like <= 50) {
 	            				distance = distance - 1;
 	            			} else {
@@ -879,7 +868,6 @@ class getP{
 	         if(route.size()==2) {
 	            if(re > temp + W[i][1]) {
 	               path = new ArrayList<>(solution);
-	               System.out.println("path : " + path.toString());
 	               re = temp;
 	            }
 	         }

@@ -18,7 +18,7 @@ public interface AddrService {
 	
 	public AddrVO callInfo(String contentId) throws Exception;
 	public AddrVO callReview(String contentId) throws Exception;
-	public double getStarAvg(String contentId) throws Exception;
+	public Double getStarAvg(String contentId) throws Exception;
 	public List<BoardVO> getStarAvgList() throws Exception;
 	
 	public int getStoryseq(String id) throws Exception;

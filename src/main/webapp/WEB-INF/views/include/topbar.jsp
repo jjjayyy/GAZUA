@@ -103,7 +103,7 @@ function getInfiniteAlarm(){
                      </div>
                      <!-- 오른쪽 아이콘 모음집. 가로 957.333px에 찌그러짐-->
                      <div class="icon_wrap">
-                        <ul class="nav navbar-nav navbar-right">
+<%--                         <ul class="nav navbar-nav navbar-right">
                            <li>
                            <%
                               if(session.getAttribute("id") == null) {
@@ -134,18 +134,11 @@ function getInfiniteAlarm(){
                                  
                              <a href="myPage.do"><img src="resources/image/mypage.jpg"></img></a>
                            </li>
-                        </ul>
+                        </ul> --%>
                      </div>
                   </nav>
                </div>
 </body>
-function checkId(event){
-	var id = <%=session.getAttribute("id")%>;
-	 if(id == null) {
-		 alert("회원만 이용 가능합니다.");
-		 location.href = "login.do";
-		 event.preventDefault();
-	 }
-}
+
 </script>
 </html>

@@ -16,7 +16,7 @@ public interface AddrDAO {
 	public List<BoardVO> getHeart() throws Exception;
 	
 	public void insertPath(BoardVO vo);
-	public double getStarAvg(String contentId) throws Exception;
+	public Double getStarAvg(String contentId) throws Exception;
 	public List<BoardVO> getStarAvgList() throws Exception;
 	
 	public AddrVO callInfo(String contentId) throws Exception;

@@ -55,7 +55,7 @@
 		<result property="heart" column="sum(heart)" />
 	</resultMap>
 	
-	<select id="getStarAvg" parameterType="String" resultType="double">
+	<select id="getStarAvg" parameterType="String" resultType="Double">
    	 	select COALESCE(AVG(star),0) from Board
    	 	<where>
    	 	contentId = #{value}
