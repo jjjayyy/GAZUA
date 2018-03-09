@@ -87,6 +87,9 @@
    
  #weatherBox{
    position: fixed;
+   right : 45vh;
+   width : 10px;
+   top : 90px;
 }    
    
 #searchTextBox{
