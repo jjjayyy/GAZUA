@@ -724,6 +724,15 @@ public class AddrController {
 
 	            		distance = distance + 10;          			    	            		
 
+            			switch (star){
+        					case 1: distance = distance - 1; break;
+        					case 2: distance = distance - 3; break;
+        					case 3: distance = distance - 5; break;
+        					case 4: distance = distance - 8; break;
+        					case 5: distance = distance - 10; break;
+        					default : distance = distance - 1; break;
+			                }
+	            		
 	            			if(1130<=nextTime && nextTime<=1330 || 1730<=nextTime && nextTime<=1930) {
 	            				if(contentTypeId.equals("39")) {					//밥 시간에 음식점 코드면 평점에 따라 가중치 차등 부여
 
@@ -743,16 +752,6 @@ public class AddrController {
 			                		distance = distance + 10000;
 			                }		                				                				                
 
-	            			
-	            			switch (star){
-	        					case 1: distance = distance - 1; break;
-	        					case 2: distance = distance - 3; break;
-	        					case 3: distance = distance - 5; break;
-	        					case 4: distance = distance - 8; break;
-	        					case 5: distance = distance - 10; break;
-	        					default : distance = distance - 1; break;
-				                }
-	            			
 
 /*	            			if(like <= 50) {
 	            				distance = distance - 1;

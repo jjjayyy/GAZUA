@@ -869,7 +869,7 @@ function getDetail(contentid, contenttypeid){
                    output += '<p class="p" >' +'연락처 : ' + myItem.infocenterfood + '</p>';
                   }
             }
-            		output += '<p>' + addr.star + '/<p>';
+            		output += '<p>사용자 별점 : ' + addr.star + '/<p>';
                 output += '</div>';
                 $('#window').html(output);
         },
