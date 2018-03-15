@@ -28,7 +28,7 @@
 		</foreach>
 	</insert>
 
-<!--MAP -->
+<!-- MAP -->
 	<select id="getAddress" parameterType="int" resultType="AddrVO">
 		select * from TourMap
 	</select>
@@ -84,7 +84,7 @@
 		</where>
 	</select>
 	
-<!-- Detail -->   	
+<!-- DETAIL INFO-->   	
    	 <select id="callInfo" parameterType="String" resultType="AddrVO">
    	 	select * from TourMap
    	 	<where>

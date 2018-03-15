@@ -66,7 +66,7 @@ public class AddrController {
 	private static List<Integer> path;
 	static int re = INF;
 	
-	//DB 저장
+/* 관광 데이터를 TourMap DB에 저장 section */
 	@RequestMapping("/inputAddr.do")
 	public String inputAddr(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		request.setCharacterEncoding("utf-8");
@@ -75,12 +75,8 @@ public class AddrController {
 		String addr = "http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=";
 		String serviceKey = "429e9l%2BRPBvvMYSqI0TIu0JgvFl1vio2dcUfXj7d66%2F%2B2glco1EDs1HDHJBssw9U7HAt1A11Cy6N0Hbk2INDfQ%3D%3D";
 		String parameter = "";
-		// serviceKey = URLEncoder.encode(serviceKey,"utf-8");
 
 		PrintWriter out = response.getWriter();
-		// PrintWriter out = new PrintWriter(new OutputStream
-		// Writer(response.getOutputStream(),"KSC5601"));
-		// ServletOutputStream out = response.getOutputStream();p
 		parameter = parameter + "&" + "areaCode=1";
 		parameter = parameter + "&" + "numOfRows=4000";
 		parameter = parameter + "&" + "MobileOS=ETC";
@@ -90,12 +86,7 @@ public class AddrController {
 		addr = addr + serviceKey + parameter;
 		URL url = new URL(addr);
 
-
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(url.openStream(), "UTF-8"));
-
 		InputStream in = url.openStream();
-		// CachedOutputStream bos = new CachedOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 		IOUtils.copy(in, bos1);
 		in.close();
@@ -109,7 +100,6 @@ public class AddrController {
 
 		JSONObject json = new JSONObject();
 		json.put("data", s);
-		// json.put("data", data);
 
 		JSONObject jso = json.getJSONObject("data");
 		JSONObject js = jso.getJSONObject("response");
@@ -120,7 +110,6 @@ public class AddrController {
 		List<AddrVO> list = new ArrayList<AddrVO>();
 		for (int i = 0; i < 3361; i++) {
 			JSONObject a = jArray.getJSONObject(i);
-
 
 			AddrVO vo = new AddrVO();
 
@@ -142,12 +131,11 @@ public class AddrController {
 				list.add(vo);
 			}
 		}
-
 		int i = service.inputAddr(list);
 		return "test";
 	}
 
-	//DB 저장(축제 update)
+/* DB 저장(축제 data update) section */
 	@RequestMapping("/updateFest.do")
 	public String updateFest(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		request.setCharacterEncoding("utf-8");
@@ -156,12 +144,8 @@ public class AddrController {
 		String addr = "http://api.visitkorea.or.kr/openapi/service/rest/KorService/areaBasedList?ServiceKey=";
 		String serviceKey = "429e9l%2BRPBvvMYSqI0TIu0JgvFl1vio2dcUfXj7d66%2F%2B2glco1EDs1HDHJBssw9U7HAt1A11Cy6N0Hbk2INDfQ%3D%3D";
 		String parameter = "";
-		// serviceKey = URLEncoder.encode(serviceKey,"utf-8");
 
 		PrintWriter out = response.getWriter();
-		// PrintWriter out = new PrintWriter(new OutputStream
-		// Writer(response.getOutputStream(),"KSC5601"));
-		// ServletOutputStream out = response.getOutputStream();
 		parameter = parameter + "&" + "areaCode=1";
 		parameter = parameter + "&" + "contentTypeId=15";
 		parameter = parameter + "&" + "numOfRows=4000";
@@ -172,12 +156,7 @@ public class AddrController {
 		addr = addr + serviceKey + parameter;
 		URL url = new URL(addr);
 
-
-		// BufferedReader in = new BufferedReader(new
-		// InputStreamReader(url.openStream(), "UTF-8"));
-
 		InputStream in = url.openStream();
-		// CachedOutputStream bos = new CachedOutputStream();
 		ByteArrayOutputStream bos1 = new ByteArrayOutputStream();
 		IOUtils.copy(in, bos1);
 		in.close();
@@ -191,7 +170,6 @@ public class AddrController {
 
 		JSONObject json = new JSONObject();
 		json.put("data", s);
-		// json.put("data", data);
 
 		JSONObject jso = json.getJSONObject("data");
 		JSONObject js = jso.getJSONObject("response");
@@ -223,12 +201,11 @@ public class AddrController {
 				list.add(vo);
 			}
 		}
-
 		int i = service.inputAddr(list);
 		return "test";
 	}
-
-	//자세한 정보 표시
+	
+/* 클릭 했을 때 자세한 정보 표시 section */
 	@RequestMapping("/callDetail.do")
 	public void callDetail(HttpServletRequest request, HttpServletResponse response, @RequestParam String contentId,
 			@RequestParam String contentTypeId) throws Exception {
@@ -266,7 +243,6 @@ public class AddrController {
 
 		JSONObject json = new JSONObject();
 		json.put("data", s);
-		
 	}
 	
 	@ResponseBody
@@ -308,7 +284,7 @@ public class AddrController {
 		return vo;
 	}
 
-
+/* 추천한 경로저장 section */
 	  @RequestMapping("/insertPath.do")
 	    public void insertPath(HttpSession session, BoardVO vo) throws Exception {
 
@@ -320,9 +296,9 @@ public class AddrController {
 	    vo.setWriter(id);
 	    	vo.setStory_seq(storySeq);
 	    	service.insertPath(vo);
-	    
 	    }
 	  
+/* 지도 section */	  
 		 @RequestMapping("/newMap")
 		 public String path2(HttpServletRequest request, HttpSession session)throws Exception{
 		    List<AddrVO> list = service.getAddress();
@@ -334,8 +310,7 @@ public class AddrController {
 		    	id = AES.setDecrypting(id);
 
 		    request.setAttribute("id", id);
-		    }
-		    
+		    }		  
 		    
 			//날씨 API
 			   String[] pty = new String[3];
@@ -377,26 +352,21 @@ public class AddrController {
 		              }	            
 		             } catch (Exception e) {
 
-		             }	        
-		        
-		      request.setAttribute("weather", weather);
+		             }	                
+		    request.setAttribute("weather", weather);
 		    return "path2";
-		 }
+		 }	
 	
-	//Dijkstra - 코스추천 길찾기
+/* 코스추천 길찾기(Dijkstra Algorithm) */
 	@RequestMapping("/getPath.do")
 	public @ResponseBody Map<String, Object> getPath(@RequestParam String sigungucode, @RequestParam String startTime, String weather) throws Exception {
 		
-		
-	       List<AddrVO> list = null;
+	     List<AddrVO> list = null;
 	       
-	       if(weather.equals("1"))
-	       {	
-	    	   list = service.getAddrWithCode(sigungucode);
-	       }
-	       else 
-	       {
-	    	   list = service.getAddrByWeather(sigungucode, "1");	//날씨가 안 좋을 때에는 실내 데이터만 가져온다.
+	       if(weather.equals("1")){	
+	    	   			list = service.getAddrWithCode(sigungucode);
+	       		} else {
+	       			list = service.getAddrByWeather(sigungucode, "1");	//날씨가 안 좋을 때에는 실내 데이터만 가져온다.
 	       }
 
 		List<BoardVO> listHeart = service.getHeart();
@@ -458,7 +428,7 @@ public class AddrController {
 				}
 							
 					
-				tempMap.put(list.get(j).getContentId(), mapList);			
+			tempMap.put(list.get(j).getContentId(), mapList);			
 			}	
 			distanceMap.put(list.get(i).getContentId(), tempMap);
 		}
@@ -475,7 +445,6 @@ public class AddrController {
 			}
 		};
 		
-
 		String start = list.get(0).getContentId();
 		
 		ArrayList destinationArry = new ArrayList<>();			//목적지 리스트 중 랜덤으로 하나의 목적지를 뽑아내기 위한 배열
@@ -501,8 +470,7 @@ public class AddrController {
 					}					
 				}
 			}
-		};
-			
+		};		
 	
 		Collections.shuffle(destinationArry);						
 		String destination = destinationArry.get(0).toString();
@@ -529,15 +497,13 @@ public class AddrController {
         jsonData.put("time", pathTime);
         return jsonData;
 	}
-
-	   // TSP
+	
+/* 코스추천 길찾기(TSP Algorithm) */
     @ResponseBody
     @RequestMapping(value = "/getpath", method= {RequestMethod.POST})
     public List<AddrVO> path(HttpServletRequest req, @RequestBody List<AddrVO> paramData) throws Exception{
 
-
           for(int i = 0; i < paramData.size(); i++) {
-
 
           }
 
@@ -599,12 +565,11 @@ public class AddrController {
           for(int i : result) {
              re.add(paramData.get(i-1));
           }
-
           
           return re;
-    }  
+    } 
 		
-	//거리 포인트 가중치 (Dijkstra)
+/* Dijkstra Algorithm weight(Distance) */
 	private static double distance(double lat1, double lon1, double lat2, double lon2, String unit) {
 
 		double theta = lon1 - lon2;
@@ -638,8 +603,7 @@ public class AddrController {
 		return (rad * 180 / Math.PI);
 	}
 	
-	
-	//다익스트라 알고리즘
+/* Dijkstra Algorithm */
 	    final static double INFINITY = Double.MAX_VALUE;		
     
 	    //dijkstra return 오브젝트
@@ -752,8 +716,7 @@ public class AddrController {
 			                		distance = distance + 10000;
 			                }		                				                				                
 
-
-/*	            			if(like <= 50) {
+	            			/*if(like <= 50) {
 	            				distance = distance - 1;
 	            			} else {
 	            				distance = distance - 10;
@@ -777,12 +740,9 @@ public class AddrController {
 	        result.preNode.putAll(preNode);
 	        return result;
 	    }
-	    
-
 }
 
-
-//TSP에서 사용하는 클래스
+/* TSP에서 사용하는 클래스 */
 class getP{
 	   public static int[][] W;
 	   public static int[][] dp;
@@ -792,9 +752,7 @@ class getP{
 	   private static List<Integer> solution;
 	   private static List<Integer> path;
 	   static int re = INF;
-	   
-
-	   
+ 
 	    public static int[][] getW(List<AddrVO> paramData){
 	      double distanceMeter = 0;
 	       int[][] W = null;
@@ -807,7 +765,6 @@ class getP{
 	      route.clear();
 	      }
 
-	      
 	      // 2차원 배열의 모든 원소를 -1로
 	      for (int i = 1; i <= N; i++) {
 	         Arrays.fill(dp[i], -1);
@@ -831,8 +788,6 @@ class getP{
 	    }   
 	   
 	   public static int getShortestPath(int current, int visited, int[][] W) {
-	      
-
 	      
 	      // 모든 정점을 다 들른 경우
 	      if (visited == (1 << N) - 1) {   
@@ -881,7 +836,7 @@ class getP{
 	      return path;
 	   }
 	   
-	   //좌표로 거리 계산(TSP)
+/* 좌표로 거리 계산(TSP) */
 	   private static double distance2(double lat1, double lon1, double lat2, double lon2, String unit) {
 
 	      double theta = lon1 - lon2;
@@ -909,7 +864,5 @@ class getP{
 	   // This function converts radians to decimal degrees
 	   private static double rad2deg(double rad) {
 	      return (rad * 180 / Math.PI);
-	   }
-
-	   
+	   }   
 	}
