@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.SessionAttributes;
 
 import com.project.sns.board.service.BoardService;
 import com.project.sns.board.vo.BoardVO;
-import com.project.sns.user.service.MailServiceImpl;
 import com.project.sns.user.service.UserService;
 import com.project.sns.user.vo.UserVO;
 
@@ -38,8 +37,6 @@ import A.algorithm.AES;
 	private UserService service;
 	@Autowired
 	private BoardService boardService;
-	@Autowired
-	private MailServiceImpl  serviceM;
 	
 	@RequestMapping("/register.do")
 	public String write(UserVO vo){
@@ -102,7 +99,6 @@ import A.algorithm.AES;
           String subject = "회원가입 인증 코드 발급 안내 입니다.";
           StringBuilder sb = new StringBuilder();
           sb.append("귀하의 인증 코드는 " + joinCode + " 입니다.");
-          serviceM.send(subject,sb.toString(), "mmwalsdnd123@gmail.com", memberId);
           return joinCode;
      }
     
