@@ -117,10 +117,7 @@ function downMinute(){
 	
 }
 
-//AM,PM 선택
-$('#ampm').change(function(){
-	changeTime();
-})
+
 
 //변경된 출발 시간 text value로 저장
 function changeTime(){

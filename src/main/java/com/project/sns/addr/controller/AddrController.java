@@ -418,7 +418,6 @@ public class AddrController {
 				for(int l=0; l<listStar.size(); l++) {
 					if(listStar.get(l) !=null && list.get(j).getContentId().equals(listStar.get(l).getContentId())) {
 						mapList.add(listStar.get(l).getStar());
-						System.out.println(listStar.get(l).getStar());
 					}
 				}				
 				for(int k=0; k<listHeart.size(); k++) {

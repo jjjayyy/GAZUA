@@ -184,6 +184,11 @@ function savepath(){
    } 
 }
 
+//AM,PM 선택
+$('#ampm').change(function(){
+	changeTime();
+})
+
 </script>  
 
 </body>

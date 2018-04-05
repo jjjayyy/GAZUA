@@ -74,6 +74,16 @@ function getInfiniteAlarm(){
 	}, 3000); //3초에 1번 실행
 }
 
+
+function loginCheck(){
+	var id = "<%=session.getAttribute("id")%>";
+	if(id=="null"){
+	      alert("회원만 이용 가능합니다.");
+		  location.href = "login.do";
+		  return false;
+	};
+}
+
 </script>
 </head>
 <body>
@@ -105,6 +115,7 @@ function getInfiniteAlarm(){
                      <div class="icon_wrap">
                          <ul class="nav navbar-nav navbar-right">
                            <li>
+                           <% %>
                            <%
                               if(session.getAttribute("id") == null) {
                                  %>
@@ -122,17 +133,14 @@ function getInfiniteAlarm(){
                               <a href="newMap.do" role="button"><img src="resources/image/path.jpg"/></a>
                            </li>
                            <li>
-                           <%
-                           	
-                           %>
-                              <a href="message.do" role="button"><img id="message_icon" src="resources/image/message_btn.jpg"/></a>
+                              <a href="message.do" role="button" onclick="return loginCheck();"><img id="message_icon" src="resources/image/message_btn.jpg"/></a>
                            </li>
                            <li>
-                              <a href="modifyBoard.do"><img src="resources/image/write.jpg"></img></a>
+                              <a href="modifyBoard.do" onclick="return loginCheck()"><img src="resources/image/write.jpg"></img></a>
                            </li>
                            <li>
                                  
-                             <a href="myPage.do"><img src="resources/image/mypage.jpg"></img></a>
+                             <a href="myPage.do" onclick="return loginCheck()"><img src="resources/image/mypage.jpg"></img></a>
                            </li>
                         </ul> 
                      </div>
@@ -140,5 +148,5 @@ function getInfiniteAlarm(){
                </div>
 </body>
 
-</script>
+
 </html>
