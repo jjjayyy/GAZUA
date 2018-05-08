@@ -2,6 +2,7 @@
 
 자동 경로 추천 서비스가 있는 여행 SNS 입니다.
 사용자는 시간, 거리, 망고플레이트 평점, 사용자 별점, 날씨를 고려한 코스를 자동으로 추천 받고, 이 경로를 저장해 나만의 스토리로 SNS에 글을 올릴 수 있습니다.
+URL : http://ec2-13-124-243-205.ap-northeast-2.compute.amazonaws.com/GAZUA/newMap.do  (메인페이지가 아닌 담당한 파트의 페이지)
 
 ## GAZUA (Travel SNS)
 - Term : 2017.12.04 ~ 2018.03.05
